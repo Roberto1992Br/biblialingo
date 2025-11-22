@@ -1,69 +1,63 @@
 import { Game } from './game.js';
 import { UI } from './ui.js';
-import { getLeaderboard, saveHighscore } from './utils.js';
+import { getLeaderboard, saveHighscore, formatTime } from './utils.js';
 
 const game = new Game();
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("BíbliaLingo Iniciado"); // Para debug
+    
+    // --- 1. ATUALIZAR UI DE PROGRESSÃO (LOCKS) ---
+    updateModeLocks();
 
-    // 1. Seleção de Modo (O clique acontece aqui)
-    const modeButtons = document.querySelectorAll('.btn-mode');
-    modeButtons.forEach(btn => {
+    // --- 2. SELEÇÃO DE MODO ---
+    document.querySelectorAll('.btn-mode').forEach(btn => {
         btn.addEventListener('click', () => {
-            console.log("Modo clicado:", btn.dataset.mode); // Debug
-            game.start(btn.dataset.mode);
+            const mode = btn.dataset.mode;
+            
+            // Verificar Bloqueio
+            if (btn.classList.contains('locked')) {
+                alert("🔒 Modo Bloqueado!\nComplete o nível anterior para liberar.");
+                return;
+            }
+
+            game.start(mode);
         });
     });
 
-    // 2. Controles do Jogo
-    const btnCheck = document.getElementById('btn-check');
-    if(btnCheck) btnCheck.addEventListener('click', () => game.checkAnswer());
+    // --- 3. CONTROLES DO JOGO ---
+    document.getElementById('btn-check').addEventListener('click', () => game.checkAnswer());
     
-    const btnHint = document.getElementById('btn-hint');
-    if(btnHint) btnHint.addEventListener('click', () => {
-        // Penalidade de tempo
+    document.getElementById('btn-hint').addEventListener('click', () => {
         game.state.time += 15; 
         UI.updateTimer(game.state.time);
-        
         const q = game.state.qList[game.state.qIndex];
-        // Mostra a referência bíblica como dica ou a dica específica
-        alert(`Dica Espiritual: ${q.hint || 'Leia ' + q.ref}`);
+        alert(`💡 DICA DIVINA:\nLeia em: ${q.ref}`);
     });
 
-    const btnQuit = document.getElementById('btn-quit');
-    if(btnQuit) btnQuit.addEventListener('click', () => {
-        if(confirm("Deseja abandonar a jornada atual?")) location.reload();
+    document.getElementById('btn-quit').addEventListener('click', () => {
+        if(confirm("Deseja encerrar sua jornada agora?")) location.reload();
     });
 
-    const btnHome = document.getElementById('btn-home');
-    if(btnHome) btnHome.addEventListener('click', () => location.reload());
+    document.getElementById('btn-home').addEventListener('click', () => location.reload());
 
-    // 3. Salvar no Ranking
-    const btnSave = document.getElementById('btn-save-rank');
-    if(btnSave) btnSave.addEventListener('click', () => {
+    // --- 4. SALVAR RANKING ---
+    document.getElementById('btn-save-rank').addEventListener('click', () => {
         const nameInput = document.getElementById('rank-name');
         const name = nameInput.value.trim();
         
-        if (!name) {
-            alert("Por favor, digite seu nome bíblico.");
-            return;
-        }
+        if (!name) return alert("Por favor, digite seu nome bíblico.");
 
         const pct = Math.round((game.state.score / game.state.qList.length) * 100);
         const newLb = saveHighscore(name, pct, game.state.time);
         
-        document.getElementById('highscore-area').innerHTML = `<p style="color:var(--gold); font-weight:bold">Seu nome foi escrito no livro dos recordes!</p>`;
+        document.getElementById('highscore-area').innerHTML = `<p style="color:var(--gold); font-weight:bold; margin-top:10px">✨ Seu nome foi escrito no Livro dos Sábios! ✨</p>`;
     });
 
-    // 4. Certificado
-    const btnCert = document.getElementById('btn-show-cert');
-    if(btnCert) btnCert.addEventListener('click', () => {
+    // --- 5. CERTIFICADO ---
+    document.getElementById('btn-show-cert').addEventListener('click', () => {
         let playerName = document.getElementById('rank-name').value.trim();
-        if (!playerName) {
-            playerName = prompt("Digite seu nome para o certificado:");
-        }
-
+        if (!playerName) playerName = prompt("Qual nome deve constar no certificado?");
+        
         if (playerName) {
             UI.generateCertificate(playerName, 100, game.state.time);
             const display = document.getElementById('cert-display');
@@ -72,7 +66,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Carregar Leaderboard na tela inicial
+    // --- 6. LEADERBOARD ---
     const lb = getLeaderboard();
     UI.updateLeaderboard(lb);
 });
+
+// Função Auxiliar para gerenciar Cadeados
+function updateModeLocks() {
+    const mediumUnlocked = localStorage.getItem('biblia_unlock_medium') === 'true';
+    const hardUnlocked = localStorage.getItem('biblia_unlock_hard') === 'true';
+
+    const btnMedium = document.querySelector('[data-mode="medium"]');
+    const btnHard = document.querySelector('[data-mode="hard"]');
+
+    // Configurar botão Médio
+    if (!mediumUnlocked) {
+        lockButton(btnMedium, "Complete o modo Iniciante");
+    } else {
+        unlockButton(btnMedium);
+    }
+
+    // Configurar botão Difícil
+    if (!hardUnlocked) {
+        lockButton(btnHard, "Complete o modo Discípulo");
+    } else {
+        unlockButton(btnHard);
+    }
+}
+
+function lockButton(btn, msg) {
+    btn.classList.add('locked');
+    btn.style.opacity = "0.6";
+    btn.style.filter = "grayscale(1)";
+    // Adicionar ícone de cadeado se não tiver
+    if (!btn.querySelector('.fa-lock')) {
+        const iconDiv = btn.querySelector('.mode-icon');
+        iconDiv.innerHTML = '<i class="fas fa-lock"></i>';
+        const infoP = btn.querySelector('.mode-info p');
+        infoP.innerText = "🔒 " + msg;
+    }
+}
+
+function unlockButton(btn) {
+    btn.classList.remove('locked');
+    btn.style.opacity = "1";
+    btn.style.filter = "none";
+    // (O ícone original está no HTML estático, ao recarregar a página ele volta, 
+    // mas se quiséssemos dinâmica total teríamos que restaurar o ícone aqui)
+}
