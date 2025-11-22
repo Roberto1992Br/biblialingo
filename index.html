@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Desafie seu conhecimento bíblico.">
+    <title>BíbliaLingo: Desafio das Escrituras</title>
+    
+    <!-- Bibliotecas -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- TELA INICIAL -->
+    <section id="start-screen" class="screen active-screen">
+        <div class="logo-container">
+            <i class="fas fa-book-bible logo-icon"></i>
+            <h1 class="brand-title">Bíblia<span>Lingo</span></h1>
+        </div>
+        <p class="subtitle">Desafio das Escrituras</p>
+        
+        <div class="mode-grid">
+            <button class="btn-mode" data-mode="easy">
+                <div class="mode-icon"><i class="fas fa-dove"></i></div>
+                <div class="mode-info">
+                    <h3>Iniciante</h3>
+                    <p>15 Perguntas • Fatos conhecidos</p>
+                </div>
+            </button>
+            
+            <button class="btn-mode" data-mode="medium">
+                <div class="mode-icon"><i class="fas fa-scroll"></i></div>
+                <div class="mode-info">
+                    <h3>Discípulo</h3>
+                    <p>30 Perguntas • Detalhes históricos</p>
+                </div>
+            </button>
+            
+            <button class="btn-mode gold-border" data-mode="hard">
+                <div class="mode-icon"><i class="fas fa-crown"></i></div>
+                <div class="mode-info">
+                    <h3>Teólogo</h3>
+                    <p>51 Perguntas • Profundo conhecimento</p>
+                </div>
+            </button>
+            
+            <button class="btn-mode" data-mode="practice">
+                <div class="mode-icon"><i class="fas fa-praying-hands"></i></div>
+                <div class="mode-info">
+                    <h3>Devocional</h3>
+                    <p>Sem Game Over • Estudo livre</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="leaderboard-container">
+            <h4><i class="fas fa-medal"></i> Galeria dos Sábios (Difícil)</h4>
+            <ul id="lb-list"></ul>
+        </div>
+    </section>
+
+    <!-- TELA DO JOGO -->
+    <section id="game-screen" class="screen">
+        <header class="game-header">
+            <button id="btn-quit" class="icon-btn"><i class="fas fa-chevron-left"></i> Sair</button>
+            
+            <div class="progress-wrapper">
+                <div class="progress-track">
+                    <div id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="status-wrapper">
+                <div class="lives"><i class="fas fa-heart"></i> <span id="lives-count">3</span></div>
+                <div class="timer"><i class="fas fa-hourglass-half"></i> <span id="timer">00:00</span></div>
+            </div>
+        </header>
+
+        <main id="game-container" class="game-content">
+            <!-- Conteúdo Injetado -->
+        </main>
+
+        <footer class="game-footer">
+            <button id="btn-hint" class="btn-secondary">REVELAÇÃO (+15s)</button>
+            <button id="btn-check" class="btn-primary">RESPONDER</button>
+        </footer>
+    </section>
+
+    <!-- TELA FINAL -->
+    <section id="end-screen" class="screen">
+        <div class="result-card">
+            <h2 id="end-title">Jornada Encerrada</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="label">Sabedoria</span>
+                    <span class="value" id="res-score">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Tempo</span>
+                    <span class="value" id="res-time">00:00</span>
+                </div>
+            </div>
+
+            <div id="highscore-area" class="hidden animate__animated animate__fadeIn">
+                <div class="rank-alert">🏆 Novo Recorde!</div>
+                <div class="input-group">
+                    <input type="text" id="rank-name" placeholder="Seu Nome" maxlength="15">
+                    <button id="btn-save-rank" class="btn-gold">SALVAR</button>
+                </div>
+            </div>
+
+            <div id="certificate-area" class="hidden animate__animated animate__bounceIn">
+                <p class="cert-msg">Excelente! Você guardou a palavra.</p>
+                <button id="btn-show-cert" class="btn-primary">VER CERTIFICADO</button>
+            </div>
+
+            <div id="cert-display" class="hidden">
+                <canvas id="cert-canvas" width="800" height="600"></canvas>
+                <a id="download-link" class="btn-secondary full-width">Baixar Imagem</a>
+            </div>
+
+            <button id="btn-home" class="btn-secondary full-width" style="margin-top:20px">MENU PRINCIPAL</button>
+        </div>
+    </section>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
